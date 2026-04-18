@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Select, MenuItem, IconButton, Collapse, Box } from '@mui/material';
+import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Select, MenuItem, IconButton, Collapse, Box, CircularProgress } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { toast } from 'react-toastify';
+import { orderApi } from '../services/api';
 
 const Row = (props) => {
   const { row, onStatusChange } = props;
@@ -17,9 +18,9 @@ const Row = (props) => {
           </IconButton>
         </TableCell>
         <TableCell>{row.id}</TableCell>
-        <TableCell>{row.customer}</TableCell>
-        <TableCell>{row.date}</TableCell>
-        <TableCell>LKR {row.total.toLocaleString()}</TableCell>
+        <TableCell>{row.firstName} {row.lastName}</TableCell>
+        <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
+        <TableCell>LKR {row.grandTotal.toLocaleString()}</TableCell>
         <TableCell>
           <Select
             value={row.status}
@@ -43,7 +44,7 @@ const Row = (props) => {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <Typography variant="subtitle2" className="font-bold">Shipping Address:</Typography>
-                  <Typography variant="body2">{row.address}, {row.city}, {row.district}</Typography>
+                  <Typography variant="body2">{row.address}, {row.nearestCity}, {row.district}</Typography>
                   <Typography variant="subtitle2" className="font-bold mt-2">Contact:</Typography>
                   <Typography variant="body2">{row.phone1} {row.phone2 && `/ ${row.phone2}`}</Typography>
                 </div>
@@ -58,9 +59,9 @@ const Row = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.items.map((item) => (
-                    <TableRow key={`${item.id}-${item.size}`}>
-                      <TableCell>{item.name}</TableCell>
+                  {row.items.map((item, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{item.productName}</TableCell>
                       <TableCell>{item.size}</TableCell>
                       <TableCell align="right">{item.quantity}</TableCell>
                       <TableCell align="right">LKR {item.price.toLocaleString()}</TableCell>
@@ -77,48 +78,64 @@ const Row = (props) => {
 };
 
 const OrderManagement = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: 'ORD-001',
-      customer: 'Kamal Perera',
-      date: '2026-04-17',
-      total: 3950,
-      status: 'PENDING',
-      address: 'No 123, Main Road',
-      city: 'Piliyandala',
-      district: 'Colombo',
-      phone1: '0771234567',
-      items: [{ id: '1', name: 'Elegant Office Frock', size: 'M', quantity: 1, price: 3500 }]
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = () => {
+    setLoading(true);
+    orderApi.getAll()
+      .then(res => {
+        setOrders(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
 
   const handleStatusChange = (id, newStatus) => {
-    setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-    toast.info(`Order ${id} status updated to ${newStatus}`);
+    orderApi.updateStatus(id, newStatus)
+      .then(() => {
+        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+        toast.info(`Order ${id} status updated to ${newStatus}`);
+      })
+      .catch(err => {
+        toast.error('Failed to update status');
+        console.error(err);
+      });
   };
 
   return (
     <div>
       <Typography variant="h5" className="mb-6">Order Management</Typography>
-      <TableContainer component={Paper}>
-        <Table aria-label="collapsible table">
-          <TableHead className="bg-gray-50">
-            <TableRow>
-              <TableCell />
-              <TableCell>Order ID</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Total</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order) => (
-              <Row key={order.id} row={order} onStatusChange={handleStatusChange} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {loading ? (
+        <div className="flex justify-center py-10"><CircularProgress /></div>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table aria-label="collapsible table">
+            <TableHead className="bg-gray-50">
+              <TableRow>
+                <TableCell />
+                <TableCell>Order ID</TableCell>
+                <TableCell>Customer</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Total</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders.map((order) => (
+                <Row key={order.id} row={order} onStatusChange={handleStatusChange} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </div>
   );
 };

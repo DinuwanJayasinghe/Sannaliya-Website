@@ -10,7 +10,7 @@ import java.util.List;
 public class DeliveryChargeService {
 
     private static final List<String> ZONE_1_DISTRICTS = Arrays.asList(
-            "Kaluthara", "Colombo", "Gampaha", "Galle", "Mathara", "Kegalle"
+            "Kalutara", "Colombo", "Gampaha", "Galle", "Matara", "Kegalle"
     );
 
     public double calculateDeliveryCharge(String district, double totalWeight) {
@@ -20,7 +20,6 @@ public class DeliveryChargeService {
         if (ZONE_1_DISTRICTS.contains(district)) {
             firstKgCharge = 450.00;
         } else {
-            // Assume all other districts belong to Zone 2
             firstKgCharge = 500.00;
         }
 

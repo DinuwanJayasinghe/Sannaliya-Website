@@ -1,12 +1,10 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Container, Typography, Grid, Paper, IconButton, Button, Divider } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
-  const { t } = useTranslation();
   const { cartItems, removeFromCart, subtotal } = useCart();
 
   if (cartItems.length === 0) {
@@ -20,7 +18,7 @@ const Cart = () => {
 
   return (
     <Container className="py-12">
-      <Typography variant="h4" className="mb-8">{t('cart')}</Typography>
+      <Typography variant="h4" className="mb-8">Cart</Typography>
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
           <Paper className="p-4">

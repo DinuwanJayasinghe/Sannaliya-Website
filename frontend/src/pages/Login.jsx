@@ -3,6 +3,7 @@ import { Container, Paper, Typography, TextField, Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { authApi } from '../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,16 +13,20 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simplified login for demo
-    if (email === 'admin@sannaliya.com' && password === 'admin123') {
-      login('mock-jwt-token', 'ROLE_ADMIN');
-      toast.success('Logged in as Admin');
-      navigate('/admin');
-    } else {
-      login('mock-jwt-token', 'ROLE_USER');
-      toast.success('Logged in successfully');
-      navigate('/');
-    }
+    authApi.login({ email, password })
+      .then(res => {
+        login(res.data.token, res.data.role);
+        toast.success('Logged in successfully');
+        if (res.data.role === 'ROLE_ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      })
+      .catch(err => {
+        toast.error('Invalid email or password');
+        console.error(err);
+      });
   };
 
   return (

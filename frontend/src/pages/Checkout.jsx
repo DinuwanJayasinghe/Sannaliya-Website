@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import SLMap from '../components/checkout/SLMap';
+import { orderApi } from '../services/api';
 
 const districts = [
   "Kalutara", "Colombo", "Gampaha", "Galle", "Matara", "Kegalle",
@@ -52,10 +53,30 @@ const Checkout = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Order submitted:', { ...formData, items: cartItems, grandTotal });
-    toast.success('Order placed successfully! (Cash on Delivery)');
-    clearCart();
-    navigate('/');
+    const orderData = {
+      ...formData,
+      items: cartItems.map(item => ({
+        productId: item.id,
+        productName: item.name,
+        size: item.size,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      totalPrice: subtotal,
+      deliveryCharge,
+      grandTotal
+    };
+
+    orderApi.placeOrder(orderData)
+      .then(res => {
+        toast.success('Order placed successfully! (Cash on Delivery)');
+        clearCart();
+        navigate('/');
+      })
+      .catch(err => {
+        toast.error('Failed to place order');
+        console.error(err);
+      });
   };
 
   return (

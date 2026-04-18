@@ -11,11 +11,12 @@ import java.util.List;
 public class Order {
     @Id
     private String id;
-    private String userId; // Optional if guest checkout is allowed (though I'll implement user registration)
+    private String userId;
 
     // Customer Info for COD
     private String firstName;
     private String lastName;
+    private String email; // Added email field
     private String address;
     private String district;
     private String nearestCity;

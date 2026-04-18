@@ -1,40 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Grid, Typography, Button, ToggleButton, ToggleButtonGroup, Rating, Divider, Chip } from '@mui/material';
+import { Container, Grid, Typography, Button, ToggleButton, ToggleButtonGroup, Rating, Divider, Chip, CircularProgress } from '@mui/material';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
+import { productApi } from '../services/api';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
   const [displayImage, setDisplayImage] = useState('');
   const [stock, setStock] = useState(0);
 
   useEffect(() => {
-    // Mock fetching product with real-time stock simulation
-    const mockProduct = {
-      id: id,
-      name: 'Elegant Office Frock',
-      description: 'A stylish and professional office wear frock designed for comfort and elegance.',
-      price: 3500.00,
-      weight: 0.4,
-      category: 'Office wear',
-      averageRating: 4.5,
-      sizes: [
-        { size: 'Xs', imageUrl: 'https://images.unsplash.com/photo-1539109132304-39155021aa39?auto=format&fit=crop&w=600&q=80', stock: 5 },
-        { size: 'S', imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80', stock: 12 },
-        { size: 'M', imageUrl: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80', stock: 0 },
-        { size: 'L', imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80', stock: 8 },
-        { size: 'XL', imageUrl: 'https://images.unsplash.com/photo-1518885320299-65a882992983?auto=format&fit=crop&w=600&q=80', stock: 3 }
-      ]
-    };
-    setProduct(mockProduct);
-    const initialSize = mockProduct.sizes[1];
-    setSelectedSize(initialSize.size);
-    setDisplayImage(initialSize.imageUrl);
-    setStock(initialSize.stock);
+    productApi.getById(id)
+      .then(res => {
+        const p = res.data;
+        setProduct(p);
+        if (p.sizes && p.sizes.length > 0) {
+          const initialSize = p.sizes[0];
+          setSelectedSize(initialSize.size);
+          setDisplayImage(initialSize.imageUrl);
+          setStock(initialSize.stock);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, [id]);
 
   const handleSizeChange = (event, newSize) => {
@@ -57,7 +53,8 @@ const ProductDetail = () => {
     }
   };
 
-  if (!product) return <Typography>Loading...</Typography>;
+  if (loading) return <div className="flex justify-center py-20"><CircularProgress /></div>;
+  if (!product) return <Typography className="py-20 text-center">Product not found.</Typography>;
 
   return (
     <Container className="py-12">
@@ -68,8 +65,8 @@ const ProductDetail = () => {
         <Grid item xs={12} md={6}>
           <Typography variant="h3" className="mb-2 font-bold">{product.name}</Typography>
           <div className="flex items-center mb-4">
-            <Rating value={product.averageRating} precision={0.5} readOnly />
-            <Typography variant="body2" className="ml-2">(12 Reviews)</Typography>
+            <Rating value={product.averageRating || 0} precision={0.5} readOnly />
+            <Typography variant="body2" className="ml-2">({product.reviews?.length || 0} Reviews)</Typography>
           </div>
           <Typography variant="h4" color="primary" className="mb-4 font-bold">LKR {product.price.toLocaleString()}</Typography>
 
@@ -88,31 +85,29 @@ const ProductDetail = () => {
             value={selectedSize}
             exclusive
             onChange={handleSizeChange}
-            aria-label="product size"
             className="mb-8"
           >
-            {product.sizes.map((s) => (
-              <ToggleButton key={s.size} value={s.size} aria-label={s.size} disabled={s.stock === 0}>
+            {product.sizes && product.sizes.map((s) => (
+              <ToggleButton key={s.size} value={s.size} disabled={s.stock === 0}>
                 {s.size}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
 
-          <div className="flex flex-col space-y-4">
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleAddToCart}
-              className="py-3"
-              disabled={stock === 0}
-            >
-              Add to Cart
-            </Button>
-          </div>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleAddToCart}
+            className="py-3"
+            disabled={stock === 0}
+          >
+            Add to Cart
+          </Button>
 
           <Divider className="my-8" />
           <Typography variant="body2">Category: {product.category}</Typography>
+          <Typography variant="body2">Sub-Category: {product.subCategory}</Typography>
           <Typography variant="body2">Shipping Weight: {product.weight} kg</Typography>
         </Grid>
       </Grid>

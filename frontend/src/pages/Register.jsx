@@ -3,9 +3,10 @@ import { Container, Paper, Typography, TextField, Button, Grid, MenuItem } from 
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { authApi } from '../services/api';
 
 const districts = [
-    "Kaluthara", "Colombo", "Gampaha", "Galle", "Mathara", "Kegalle",
+    "Kalutara", "Colombo", "Gampaha", "Galle", "Matara", "Kegalle",
     "Kandy", "Matale", "Nuwara Eliya", "Ampara", "Batticaloa", "Trincomalee",
     "Anuradhapura", "Polonnaruwa", "Jaffna", "Kilinochchi", "Mannar", "Mullaitivu",
     "Vavuniya", "Kurunegala", "Puttalam", "Ratnapura", "Hambantota", "Badulla", "Monaragala"
@@ -23,10 +24,16 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simplified register for demo
-    login('mock-jwt-token', 'ROLE_USER');
-    toast.success('Account created successfully');
-    navigate('/');
+    authApi.register(formData)
+      .then(res => {
+        login(res.data.token, res.data.role);
+        toast.success('Account created successfully');
+        navigate('/');
+      })
+      .catch(err => {
+        toast.error('Registration failed');
+        console.error(err);
+      });
   };
 
   return (
