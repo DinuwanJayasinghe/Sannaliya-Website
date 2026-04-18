@@ -44,7 +44,7 @@ const ProductManagement = () => {
   };
 
   const handleOpen = (product = null) => {
-    const p = product || { name: '', price: 0, category: '', subCategory: '', description: '', weight: 0.5, sizes: sizesList.map(s => ({ size: s, imageUrl: '', stock: 0 })) };
+    const p = product || { name: '', price: 0, category: '', subCategory: '', description: '', weight: 0.5, mainImageUrl: '', sizes: sizesList.map(s => ({ size: s, imageUrl: '', stock: 0 })) };
     setEditingProduct(p);
     setSelectedCat(p.category);
     setOpen(true);
@@ -141,6 +141,14 @@ const ProductManagement = () => {
                 fullWidth label="Price (LKR)" type="number"
                 value={editingProduct?.price || ''}
                 onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})}
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth label="Main Image URL"
+                value={editingProduct?.mainImageUrl || ''}
+                onChange={(e) => setEditingProduct({...editingProduct, mainImageUrl: e.target.value})}
                 margin="normal"
               />
             </Grid>

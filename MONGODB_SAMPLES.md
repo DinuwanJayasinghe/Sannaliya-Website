@@ -32,6 +32,7 @@ Stores product details with size-wise variations and stock levels.
   "subCategory": "Frocks",
   "price": 3500.0,
   "weight": 0.4,
+  "mainImageUrl": "https://images.unsplash.com/photo-1539109132304-39155021aa39?auto=format&fit=crop&w=600&q=80",
   "sizes": [
     {
       "size": "M",

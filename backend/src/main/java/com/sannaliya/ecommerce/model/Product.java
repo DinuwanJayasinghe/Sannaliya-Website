@@ -17,6 +17,7 @@ public class Product {
     private String subCategory;
     private double price;
     private double weight; // in kg
+    private String mainImageUrl; // Main display image
     private List<ProductSize> sizes;
     private List<Review> reviews;
     private double averageRating;

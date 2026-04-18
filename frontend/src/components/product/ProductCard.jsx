@@ -8,12 +8,12 @@ const ProductCard = ({ product }) => {
       <CardMedia
         component="img"
         height="260"
-        image={product.sizes[0].imageUrl}
+        image={product.mainImageUrl || (product.sizes && product.sizes[0]?.imageUrl)}
         alt={product.name}
         className="h-64 object-cover"
       />
       <CardContent className="flex-grow">
-        <Typography gutterBottom variant="h6" component="div">
+        <Typography gutterBottom variant="h6" component="div" className="line-clamp-1">
           {product.name}
         </Typography>
         <Typography variant="body1" color="primary" className="font-bold">

@@ -29,20 +29,29 @@ public class OrderController {
 
     @PostMapping
     public Order placeOrder(@RequestBody Order order) {
-        double totalWeight = order.getItems().stream()
-                .mapToDouble(item -> {
-                    Optional<Product> product = productRepository.findById(item.getProductId());
-                    // Fallback to a reasonable default only if product not found, but log it
-                    if (product.isEmpty()) {
-                        auditLogService.log("ORDER_WEIGHT_FALLBACK", "SYSTEM", "Product ID not found: " + item.getProductId());
-                    }
-                    return product.map(p -> p.getWeight() * item.getQuantity()).orElse(0.5 * item.getQuantity());
-                })
-                .sum();
+        // Recalculate total price and weight on the server to prevent fraud
+        double calculatedTotalPrice = 0.0;
+        double totalWeight = 0.0;
+
+        for (Order.OrderItem item : order.getItems()) {
+            Optional<Product> productOpt = productRepository.findById(item.getProductId());
+            if (productOpt.isPresent()) {
+                Product product = productOpt.get();
+                item.setProductName(product.getName());
+                item.setPrice(product.getPrice()); // Always use server-side price
+                calculatedTotalPrice += product.getPrice() * item.getQuantity();
+                totalWeight += product.getWeight() * item.getQuantity();
+            } else {
+                // Handle missing product - in real app, might throw error
+                auditLogService.log("ORDER_ITEM_NOT_FOUND", "SYSTEM", "Product ID: " + item.getProductId());
+            }
+        }
 
         double deliveryCharge = deliveryChargeService.calculateDeliveryCharge(order.getDistrict(), totalWeight);
+
+        order.setTotalPrice(calculatedTotalPrice);
         order.setDeliveryCharge(deliveryCharge);
-        order.setGrandTotal(order.getTotalPrice() + deliveryCharge);
+        order.setGrandTotal(calculatedTotalPrice + deliveryCharge);
         order.setStatus(Order.OrderStatus.PENDING);
         order.setCreatedAt(System.currentTimeMillis());
 
@@ -50,6 +59,7 @@ public class OrderController {
 
         auditLogService.log("ORDER_PLACED", order.getEmail() != null ? order.getEmail() : "GUEST", "Order ID: " + savedOrder.getId());
 
+        // Notify admin in real-time
         messagingTemplate.convertAndSend("/topic/orders", savedOrder);
 
         return savedOrder;

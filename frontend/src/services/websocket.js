@@ -4,10 +4,13 @@ import { toast } from 'react-toastify';
 
 let stompClient = null;
 
-export const connectWebSocket = (role) => {
+// Dynamically determine WebSocket URL
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws';
+
+export const connectWebSocket = (role, onOrderReceived) => {
   if (stompClient) return;
 
-  const socket = new SockJS('http://localhost:8080/ws');
+  const socket = new SockJS(WS_URL);
   stompClient = new Client({
     webSocketFactory: () => socket,
     onConnect: () => {
@@ -17,8 +20,8 @@ export const connectWebSocket = (role) => {
           const order = JSON.parse(message.body);
           toast.info(`New Order received! ID: ${order.id || 'New'}`, {
             autoClose: 10000,
-            onClick: () => window.location.href = '/admin/orders'
           });
+          if (onOrderReceived) onOrderReceived(order);
         });
       }
     },
