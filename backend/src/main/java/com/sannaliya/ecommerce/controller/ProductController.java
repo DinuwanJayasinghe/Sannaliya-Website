@@ -15,6 +15,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository repository;
+    private final com.sannaliya.ecommerce.repository.OrderRepository orderRepository;
 
     @GetMapping
     public List<Product> getAllProducts() {
@@ -45,9 +46,45 @@ public class ProductController {
                     product.setSubCategory(productDetails.getSubCategory());
                     product.setPrice(productDetails.getPrice());
                     product.setWeight(productDetails.getWeight());
+                    product.setMainImageUrl(productDetails.getMainImageUrl());
                     product.setSizes(productDetails.getSizes());
                     product.setNewArrival(productDetails.isNewArrival());
                     product.setStockQuantity(productDetails.getStockQuantity());
+                    return ResponseEntity.ok(repository.save(product));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/reviews")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> addReview(@PathVariable String id, @RequestBody Product.Review review) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Check if user has purchased this product
+        List<com.sannaliya.ecommerce.model.Order> userOrders = orderRepository.findByEmail(userEmail);
+        boolean hasPurchased = userOrders.stream()
+                .filter(o -> o.getStatus() == com.sannaliya.ecommerce.model.Order.OrderStatus.DELIVERED)
+                .flatMap(o -> o.getItems().stream())
+                .anyMatch(item -> item.getProductId().equals(id));
+
+        if (!hasPurchased) {
+            return ResponseEntity.status(403).body("Only customers who have purchased and received the product can leave a review.");
+        }
+
+        return repository.findById(id)
+                .map(product -> {
+                    if (product.getReviews() == null) {
+                        product.setReviews(new java.util.ArrayList<>());
+                    }
+                    review.setTimestamp(System.currentTimeMillis());
+                    product.getReviews().add(review);
+
+                    double avg = product.getReviews().stream()
+                            .mapToInt(Product.Review::getRating)
+                            .average()
+                            .orElse(0.0);
+                    product.setAverageRating(avg);
+
                     return ResponseEntity.ok(repository.save(product));
                 })
                 .orElse(ResponseEntity.notFound().build());
