@@ -23,11 +23,12 @@ public class Product {
     private double averageRating;
     private boolean isNewArrival;
     private int stockQuantity;
+    private long createdAt = System.currentTimeMillis();
 
     @Data
     public static class ProductSize {
         private String size; // Xs, S, M, L, XL, 2xl, 3xl, 4xl, 5xl
-        private String imageUrl;
+        private String imageUrl; // GridFS fileId or URL
         private int stock;
     }
 

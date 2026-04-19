@@ -39,18 +39,18 @@ const SLMap = ({ selectedDistrict, onDistrictSelect }) => {
                   onClick={() => onDistrictSelect(districtName)}
                   style={{
                     default: {
-                      fill: isSelected ? "#FFC107" : (isZone1 ? "#2A9D8F" : "#A8D5BA"),
+                      fill: isSelected ? "#F4A261" : (isZone1 ? "#1FA2A6" : "#A8DADC"),
                       outline: "none",
                       stroke: "#FFF",
-                      strokeWidth: 0.5,
+                      strokeWidth: 1,
                     },
                     hover: {
-                      fill: "#F4A261",
+                      fill: "#0F6B6E",
                       outline: "none",
                       cursor: "pointer",
                     },
                     pressed: {
-                      fill: "#E76F51",
+                      fill: "#2F3E46",
                       outline: "none",
                     },
                   }}

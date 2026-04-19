@@ -57,10 +57,37 @@ const ProductDetail = () => {
   if (!product) return <Typography className="py-20 text-center">Product not found.</Typography>;
 
   return (
-    <Container className="py-12">
+    <Container className="py-12 dark:text-white">
       <Grid container spacing={6}>
         <Grid item xs={12} md={6}>
-          <img src={displayImage} alt={product.name} className="w-full h-auto rounded-lg shadow-md" />
+          <div className="relative overflow-hidden group rounded-xl shadow-lg">
+            <img
+              src={displayImage}
+              alt={product.name}
+              className="w-full h-auto transition-transform duration-500 group-hover:scale-150 cursor-zoom-in"
+              onMouseMove={(e) => {
+                const { left, top, width, height } = e.target.getBoundingClientRect();
+                const x = ((e.pageX - left - window.scrollX) / width) * 100;
+                const y = ((e.pageY - top - window.scrollY) / height) * 100;
+                e.target.style.transformOrigin = `${x}% ${y}%`;
+              }}
+            />
+          </div>
+          <div className="flex mt-4 space-x-2 overflow-x-auto pb-2">
+            {product.sizes && product.sizes.map((s, idx) => (
+              <img
+                key={idx}
+                src={s.imageUrl}
+                alt={s.size}
+                className={`h-20 w-20 object-cover rounded border-2 cursor-pointer transition-all ${selectedSize === s.size ? 'border-sannaliya-teal' : 'border-transparent opacity-60'}`}
+                onClick={() => {
+                  setSelectedSize(s.size);
+                  setDisplayImage(s.imageUrl);
+                  setStock(s.stock);
+                }}
+              />
+            ))}
+          </div>
         </Grid>
         <Grid item xs={12} md={6}>
           <Typography variant="h3" className="mb-2 font-bold">{product.name}</Typography>

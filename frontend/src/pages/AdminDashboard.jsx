@@ -29,7 +29,7 @@ const DashboardHome = () => (
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="sales" stroke="#2A9D8F" strokeWidth={2} />
+              <Line type="monotone" dataKey="sales" stroke="#1FA2A6" strokeWidth={3} dot={{ fill: '#0F6B6E' }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -44,19 +44,19 @@ const DashboardHome = () => (
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="value" fill="#1B4332" />
+              <Bar dataKey="value" fill="#1FA2A6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Paper>
     </Grid>
     <Grid item xs={12} md={6}>
-        <Paper className="p-6 h-full flex flex-col justify-center items-center">
-            <Typography variant="h4" className="text-sannaliya-teal font-bold">124</Typography>
-            <Typography variant="subtitle1">Total Orders Today</Typography>
-            <Divider className="w-full my-4" />
-            <Typography variant="h4" className="text-sannaliya-dark font-bold">LKR 45,200</Typography>
-            <Typography variant="subtitle1">Revenue Today</Typography>
+        <Paper className="p-6 h-full flex flex-col justify-center items-center bg-teal-gradient text-white">
+            <Typography variant="h4" className="font-bold">124</Typography>
+            <Typography variant="subtitle1" className="opacity-80">Total Orders Today</Typography>
+            <Divider className="w-full my-4 bg-white opacity-20" />
+            <Typography variant="h4" className="font-bold">LKR 45,200</Typography>
+            <Typography variant="subtitle1" className="opacity-80">Revenue Today</Typography>
         </Paper>
     </Grid>
   </Grid>

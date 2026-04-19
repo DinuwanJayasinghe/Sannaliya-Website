@@ -7,8 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        'sannaliya-teal': '#2A9D8F',
-        'sannaliya-dark': '#1B4332',
+        'sannaliya-teal': '#1FA2A6',
+        'sannaliya-teal-dark': '#0F6B6E',
+        'sannaliya-mint': '#A8DADC',
+        'sannaliya-gray': '#2F3E46',
+        'sannaliya-bg': '#F8F9FA',
+      },
+      backgroundImage: {
+        'teal-gradient': 'linear-gradient(to right, #1FA2A6, #0F6B6E)',
       }
     },
   },
