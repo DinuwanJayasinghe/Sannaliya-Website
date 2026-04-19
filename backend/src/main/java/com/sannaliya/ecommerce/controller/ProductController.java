@@ -2,9 +2,11 @@ package com.sannaliya.ecommerce.controller;
 
 import com.sannaliya.ecommerce.model.Product;
 import com.sannaliya.ecommerce.repository.ProductRepository;
+import com.sannaliya.ecommerce.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository repository;
+    private final AuditLogService auditLogService;
 
     @GetMapping
     public List<Product> getAllProducts() {
@@ -31,12 +34,16 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Product createProduct(@RequestBody Product product) {
-        return repository.save(product);
+        Product saved = repository.save(product);
+        String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        auditLogService.log("PRODUCT_CREATE", adminEmail, "Product created: " + saved.getName());
+        return saved;
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product productDetails) {
+        String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         return repository.findById(id)
                 .map(product -> {
                     product.setName(productDetails.getName());
@@ -45,10 +52,13 @@ public class ProductController {
                     product.setSubCategory(productDetails.getSubCategory());
                     product.setPrice(productDetails.getPrice());
                     product.setWeight(productDetails.getWeight());
+                    product.setMainImageUrl(productDetails.getMainImageUrl());
                     product.setSizes(productDetails.getSizes());
                     product.setNewArrival(productDetails.isNewArrival());
                     product.setStockQuantity(productDetails.getStockQuantity());
-                    return ResponseEntity.ok(repository.save(product));
+                    Product updated = repository.save(product);
+                    auditLogService.log("PRODUCT_UPDATE", adminEmail, "Product updated: " + id);
+                    return ResponseEntity.ok(updated);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -56,9 +66,11 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+        String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         return repository.findById(id)
                 .map(product -> {
                     repository.delete(product);
+                    auditLogService.log("PRODUCT_DELETE", adminEmail, "Product deleted: " + id);
                     return ResponseEntity.ok().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
