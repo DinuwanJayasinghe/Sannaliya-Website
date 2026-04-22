@@ -7,3 +7,15 @@
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+9:05:57 PM [vite] page reload tailwind.config.js
+9:06:58 PM [vite] hmr update /src/App.jsx, /src/index.css
+9:09:51 PM [vite] hmr update /src/pages/ProductDetail.jsx, /src/index.css
+9:11:18 PM [vite] hmr update /src/components/common/Navbar.jsx, /src/index.css
+9:11:40 PM [vite] hmr update /src/pages/Home.jsx, /src/index.css
+9:11:53 PM [vite] hmr update /src/components/common/Footer.jsx, /src/index.css
+9:12:22 PM [vite] hmr update /src/components/product/ImageZoom.jsx, /src/index.css
+9:13:16 PM [vite] hmr update /src/components/product/ProductCard.jsx, /src/index.css
+9:13:16 PM [vite] hmr update /src/components/product/ProductCard.jsx, /src/index.css
+9:13:26 PM [vite] hmr update /src/AppRoutes.jsx, /src/index.css
+9:17:15 PM [vite] ✨ new dependencies optimized: @mui/material/CssBaseline, @mui/icons-material
+9:17:15 PM [vite] ✨ optimized dependencies changed. reloading

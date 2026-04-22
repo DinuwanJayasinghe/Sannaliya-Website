@@ -1,8 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-teal: #2A9D8F;
-  --dark-green: #1B4332;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-slate-900 dark:text-slate-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-full font-bold shadow-premium hover:shadow-teal-glow transition-all active:scale-95;
+  }
+
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/20 dark:border-slate-800/50;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.teal-gradient-text {
+  @apply bg-clip-text text-transparent bg-teal-gradient;
+}
+
+/* Custom transitions for dark mode */
+* {
+  @apply transition-colors duration-300;
+}
+
+/* Custom Swiper/Slider overrides if needed */
+.hero-slider-dot-active {
+  @apply w-8 bg-primary rounded-full transition-all duration-300;
 }

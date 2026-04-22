@@ -9,11 +9,13 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import ScrollToTop from './components/common/ScrollToTop';
 
 const AppRoutes = () => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
+      <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-dark-bg transition-colors duration-300">
         <Navbar />
         <main className="flex-grow">
           <Routes>
