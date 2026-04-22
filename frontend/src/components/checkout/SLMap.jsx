@@ -4,9 +4,7 @@ import {
   Geographies,
   Geography,
 } from "react-simple-maps";
-
-// Simplified GeoJSON for Sri Lanka Districts
-const geoUrl = "https://raw.githubusercontent.com/aravindha1234/Sri-Lanka-Districts-GeoJSON/master/sri-lanka-districts.json";
+import geoData from "../../assets/sl-districts.json";
 
 const zone1Districts = ["Kalutara", "Colombo", "Gampaha", "Galle", "Matara", "Kegalle"];
 
@@ -22,10 +20,10 @@ const SLMap = ({ selectedDistrict, onDistrictSelect }) => {
         width={400}
         height={500}
       >
-        <Geographies geography={geoUrl}>
+        <Geographies geography={geoData}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const districtName = geo.properties.name;
+              const districtName = geo.properties.shapeName.replace(" District", "");
               // Map names might differ slightly in GeoJSON
               const isZone1 = zone1Districts.includes(districtName);
               const isSelected = selectedDistrict === districtName;

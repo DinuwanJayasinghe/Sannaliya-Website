@@ -18,6 +18,7 @@ public class Product {
     private double price;
     private double weight; // in kg
     private String mainImageUrl; // Main display image
+    private String imageData;    // Base64 encoded image data stored in MongoDB
     private List<ProductSize> sizes;
     private List<Review> reviews;
     private double averageRating;

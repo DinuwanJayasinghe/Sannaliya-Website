@@ -145,12 +145,39 @@ const ProductManagement = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth label="Main Image URL"
-                value={editingProduct?.mainImageUrl || ''}
-                onChange={(e) => setEditingProduct({...editingProduct, mainImageUrl: e.target.value})}
-                margin="normal"
-              />
+              <Box className="flex items-center space-x-4">
+                <TextField
+                  fullWidth label="Main Image URL"
+                  value={editingProduct?.mainImageUrl || ''}
+                  onChange={(e) => setEditingProduct({...editingProduct, mainImageUrl: e.target.value})}
+                  margin="normal"
+                />
+                <Button variant="outlined" component="label">
+                  Upload Image
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setEditingProduct({
+                            ...editingProduct,
+                            imageData: reader.result,
+                            mainImageUrl: file.name
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </Button>
+              </Box>
+              {editingProduct?.imageData && (
+                <img src={editingProduct.imageData} alt="Preview" className="mt-2 h-20 w-auto rounded border" />
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField

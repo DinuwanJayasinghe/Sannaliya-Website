@@ -6,7 +6,7 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Badge, Menu, MenuItem,
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import logo from '../../assets/logo.jpg';
+import logo from '../../assets/logo.png';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -30,7 +30,7 @@ const Navbar = () => {
         <Toolbar className="bg-white px-0 flex justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-                <img src={logo} alt="Sannaliya Logo" className="h-14 hover:scale-105 transition-transform" />
+                <img src={logo} alt="Sannaliya Logo" className="h-14 w-auto object-contain hover:scale-105 transition-transform" />
             </Link>
 
             {/* Menu Center */}

@@ -23,8 +23,10 @@ const ProductDetail = () => {
         if (p.sizes && p.sizes.length > 0) {
           const initialSize = p.sizes[0];
           setSelectedSize(initialSize.size);
-          setDisplayImage(initialSize.imageUrl);
+          setDisplayImage(initialSize.imageUrl || p.imageData);
           setStock(initialSize.stock);
+        } else {
+          setDisplayImage(p.imageData || p.mainImageUrl);
         }
         setLoading(false);
       })
@@ -63,7 +65,12 @@ const ProductDetail = () => {
         <Grid item xs={12} md={6}>
           <ImageZoom src={displayImage} alt={product.name} />
           <div className="flex space-x-2 mt-4 overflow-x-auto py-2">
-              {product.sizes?.map((s, i) => (
+              <img
+                src={product.imageData || product.mainImageUrl} alt="main"
+                className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition-all ${displayImage === (product.imageData || product.mainImageUrl) ? 'border-sannaliya-teal scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                onClick={() => { setDisplayImage(product.imageData || product.mainImageUrl); }}
+              />
+              {product.sizes?.filter(s => s.imageUrl).map((s, i) => (
                   <img
                     key={i} src={s.imageUrl} alt={s.size}
                     className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 transition-all ${displayImage === s.imageUrl ? 'border-sannaliya-teal scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}

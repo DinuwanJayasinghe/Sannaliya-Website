@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { orderApi } from '../services/api';
+import { connectWebSocket, disconnectWebSocket } from '../services/websocket';
 
 const DashboardHome = () => {
     const [stats, setStats] = useState({
@@ -18,7 +19,7 @@ const DashboardHome = () => {
         ]
     });
 
-    useEffect(() => {
+    const refreshData = () => {
         orderApi.getAll().then(res => {
             const orders = res.data;
             const revenue = orders.reduce((acc, o) => acc + o.grandTotal, 0);
@@ -30,6 +31,18 @@ const DashboardHome = () => {
                 chartData: prev.chartData.map((d, i) => i === 4 ? { ...d, sales: revenue / 100 } : d) // Mock distribution
             }));
         });
+    };
+
+    useEffect(() => {
+        refreshData();
+
+        // Connect to WebSocket for real-time updates
+        connectWebSocket('ROLE_ADMIN', (newOrder) => {
+            console.log("Real-time update received in Dashboard:", newOrder);
+            refreshData(); // Refresh all stats when a new order arrives
+        });
+
+        return () => disconnectWebSocket();
     }, []);
 
     return (
